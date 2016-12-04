@@ -10,21 +10,21 @@ public class JokeImgLastIdModel extends BaseModel implements Serializable {
 
 	private Integer id;
 
-	private Integer jokeImgId;
+    private Integer jokeImgId;
 
-	public Integer getId() {
-		return id;
-	}
+    public Integer getId() {
+        return id;
+    }
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	public Integer getJokeImgId() {
-		return jokeImgId;
-	}
+    public Integer getJokeImgId() {
+        return jokeImgId;
+    }
 
-	public void setJokeImgId(Integer jokeImgId) {
-		this.jokeImgId = jokeImgId;
-	}
+    public void setJokeImgId(Integer jokeImgId) {
+        this.jokeImgId = jokeImgId;
+    }
 }

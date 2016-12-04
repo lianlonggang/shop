@@ -1,121 +1,202 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.shop.base.dao.JokeCommetMapper">
-  <resultMap id="BaseResultMap" type="com.shop.base.entity.JokeCommetModel">
-    <id column="commet_id" jdbcType="INTEGER" property="commetId" />
-    <result column="commet_joke_id" jdbcType="INTEGER" property="commetJokeId" />
-    <result column="user_code" jdbcType="INTEGER" property="userCode" />
-    <result column="commet_time" jdbcType="TIMESTAMP" property="commetTime" />
-    <result column="commet_agree_count" jdbcType="INTEGER" property="commetAgreeCount" />
-  </resultMap>
-  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.shop.base.entity.JokeCommetModel">
-    <result column="commet_content" jdbcType="LONGVARCHAR" property="commetContent" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    commet_id, commet_joke_id, user_code, commet_time, commet_agree_count
-  </sql>
-  <sql id="Blob_Column_List">
-    commet_content
-  </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
-    select 
-    <include refid="Base_Column_List" />
-    ,
-    <include refid="Blob_Column_List" />
-    from tbl_joke_commet
-    where commet_id = #{commetId,jdbcType=INTEGER}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from tbl_joke_commet
-    where commet_id = #{commetId,jdbcType=INTEGER}
-  </delete>
-  <insert id="insert" parameterType="com.shop.base.entity.JokeCommetModel">
-    insert into tbl_joke_commet (commet_id, commet_joke_id, user_code, 
-      commet_time, commet_agree_count, commet_content
-      )
-    values (#{commetId,jdbcType=INTEGER}, #{commetJokeId,jdbcType=INTEGER}, #{userCode,jdbcType=INTEGER}, 
-      #{commetTime,jdbcType=TIMESTAMP}, #{commetAgreeCount,jdbcType=INTEGER}, #{commetContent,jdbcType=LONGVARCHAR}
-      )
-  </insert>
-  <insert id="insertSelective" parameterType="com.shop.base.entity.JokeCommetModel">
-    insert into tbl_joke_commet
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="commetId != null">
-        commet_id,
-      </if>
-      <if test="commetJokeId != null">
-        commet_joke_id,
-      </if>
-      <if test="userCode != null">
-        user_code,
-      </if>
-      <if test="commetTime != null">
-        commet_time,
-      </if>
-      <if test="commetAgreeCount != null">
-        commet_agree_count,
-      </if>
-      <if test="commetContent != null">
-        commet_content,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="commetId != null">
-        #{commetId,jdbcType=INTEGER},
-      </if>
-      <if test="commetJokeId != null">
-        #{commetJokeId,jdbcType=INTEGER},
-      </if>
-      <if test="userCode != null">
-        #{userCode,jdbcType=INTEGER},
-      </if>
-      <if test="commetTime != null">
-        #{commetTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="commetAgreeCount != null">
-        #{commetAgreeCount,jdbcType=INTEGER},
-      </if>
-      <if test="commetContent != null">
-        #{commetContent,jdbcType=LONGVARCHAR},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.shop.base.entity.JokeCommetModel">
-    update tbl_joke_commet
-    <set>
-      <if test="commetJokeId != null">
-        commet_joke_id = #{commetJokeId,jdbcType=INTEGER},
-      </if>
-      <if test="userCode != null">
-        user_code = #{userCode,jdbcType=INTEGER},
-      </if>
-      <if test="commetTime != null">
-        commet_time = #{commetTime,jdbcType=TIMESTAMP},
-      </if>
-      <if test="commetAgreeCount != null">
-        commet_agree_count = #{commetAgreeCount,jdbcType=INTEGER},
-      </if>
-      <if test="commetContent != null">
-        commet_content = #{commetContent,jdbcType=LONGVARCHAR},
-      </if>
-    </set>
-    where commet_id = #{commetId,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.shop.base.entity.JokeCommetModel">
-    update tbl_joke_commet
-    set commet_joke_id = #{commetJokeId,jdbcType=INTEGER},
-      user_code = #{userCode,jdbcType=INTEGER},
-      commet_time = #{commetTime,jdbcType=TIMESTAMP},
-      commet_agree_count = #{commetAgreeCount,jdbcType=INTEGER},
-      commet_content = #{commetContent,jdbcType=LONGVARCHAR}
-    where commet_id = #{commetId,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.shop.base.entity.JokeCommetModel">
-    update tbl_joke_commet
-    set commet_joke_id = #{commetJokeId,jdbcType=INTEGER},
-      user_code = #{userCode,jdbcType=INTEGER},
-      commet_time = #{commetTime,jdbcType=TIMESTAMP},
-      commet_agree_count = #{commetAgreeCount,jdbcType=INTEGER}
-    where commet_id = #{commetId,jdbcType=INTEGER}
-  </update>
+	<resultMap id="BaseResultMap" type="com.shop.base.entity.JokeCommetModel">
+		<id column="commet_id" jdbcType="INTEGER" property="commetId" />
+		<result column="commet_parnt_id" jdbcType="INTEGER" property="commetParntId" />
+		<result column="commet_joke_id" jdbcType="INTEGER" property="commetJokeId" />
+		<result column="commet_joke_type" jdbcType="VARCHAR" property="commetJokeType" />
+		<result column="user_code" jdbcType="VARCHAR" property="userCode" />
+		<result column="commet_time" jdbcType="TIMESTAMP" property="commetTime" />
+		<result column="commet_agree_count" jdbcType="INTEGER"
+			property="commetAgreeCount" />
+		<result column="commet_disagree_count" jdbcType="INTEGER"
+			property="commetDisagreeCount" />
+	</resultMap>
+	<resultMap extends="BaseResultMap" id="ResultMapWithBLOBs"
+		type="com.shop.base.entity.JokeCommetModel">
+		<result column="commet_content" jdbcType="LONGVARCHAR"
+			property="commetContent" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		commet_id, commet_parnt_id, commet_joke_id, commet_joke_type, user_code,
+		commet_time,
+		commet_agree_count, commet_disagree_count
+	</sql>
+	<sql id="Blob_Column_List">
+		commet_content
+	</sql>
+	<select id="selectByPrimaryKey" parameterType="java.lang.Integer"
+		resultMap="ResultMapWithBLOBs">
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from tbl_joke_commet
+		where commet_id = #{commetId,jdbcType=INTEGER}
+	</select>
+	<select id="queryCommetList" parameterType="com.shop.base.entity.JokeCommetModel" resultMap="ResultMapWithBLOBs">
+	    select 
+	    <include refid="Base_Column_List" />
+	    ,
+	    <include refid="Blob_Column_List" />
+	    from tbl_joke_commet
+	    where commet_Joke_Id = #{commetJokeId,jdbcType=VARCHAR}
+	    and commet_joke_type = #{commetJokeType,jdbcType=VARCHAR}
+	    order by commet_time desc
+	    limit #{rowNo,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+	  </select>
+	<select id="queryGodCommet" parameterType="com.shop.base.entity.JokeCommetModel" resultMap="ResultMapWithBLOBs">
+	    select 
+	    <include refid="Base_Column_List" />
+	    ,
+	    <include refid="Blob_Column_List" />
+	    from tbl_joke_commet
+	    where commet_Joke_Id = #{commetJokeId,jdbcType=VARCHAR}
+	    and commet_joke_type = #{commetJokeType,jdbcType=VARCHAR}
+	    and commet_agree_count > 20
+	    order by commet_time desc limit 1
+	  </select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from tbl_joke_commet
+		where commet_id = #{commetId,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.shop.base.entity.JokeCommetModel">
+		insert into tbl_joke_commet (commet_id, commet_parnt_id, commet_joke_id,
+		commet_joke_type, user_code, commet_time,
+		commet_agree_count, commet_disagree_count,
+		commet_content)
+		values (#{commetId,jdbcType=INTEGER}, #{commetParntId,jdbcType=INTEGER},
+		#{commetJokeId,jdbcType=INTEGER},
+		#{commetJokeType,jdbcType=VARCHAR}, #{userCode,jdbcType=VARCHAR}, #{commetTime,jdbcType=TIMESTAMP},
+		#{commetAgreeCount,jdbcType=INTEGER},
+		#{commetDisagreeCount,jdbcType=INTEGER},
+		#{commetContent,jdbcType=LONGVARCHAR})
+	</insert>
+	<insert id="insertSelective" parameterType="com.shop.base.entity.JokeCommetModel">
+		insert into tbl_joke_commet
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="commetId != null">
+				commet_id,
+			</if>
+			<if test="commetParntId != null">
+				commet_parnt_id,
+			</if>
+			<if test="commetJokeId != null">
+				commet_joke_id,
+			</if>
+			<if test="commetJokeType != null">
+				commet_joke_type,
+			</if>
+			<if test="userCode != null">
+				user_code,
+			</if>
+			<if test="commetTime != null">
+				commet_time,
+			</if>
+			<if test="commetAgreeCount != null">
+				commet_agree_count,
+			</if>
+			<if test="commetDisagreeCount != null">
+				commet_disagree_count,
+			</if>
+			<if test="commetContent != null">
+				commet_content,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="commetId != null">
+				#{commetId,jdbcType=INTEGER},
+			</if>
+			<if test="commetParntId != null">
+				#{commetParntId,jdbcType=INTEGER},
+			</if>
+			<if test="commetJokeId != null">
+				#{commetJokeId,jdbcType=INTEGER},
+			</if>
+			<if test="commetJokeType != null">
+				#{commetJokeType,jdbcType=VARCHAR},
+			</if>
+			<if test="userCode != null">
+				#{userCode,jdbcType=VARCHAR},
+			</if>
+			<if test="commetTime != null">
+				#{commetTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="commetAgreeCount != null">
+				#{commetAgreeCount,jdbcType=INTEGER},
+			</if>
+			<if test="commetDisagreeCount != null">
+				#{commetDisagreeCount,jdbcType=INTEGER},
+			</if>
+			<if test="commetContent != null">
+				#{commetContent,jdbcType=LONGVARCHAR},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.shop.base.entity.JokeCommetModel">
+		update tbl_joke_commet
+		<set>
+			<if test="commetParntId != null">
+				commet_parnt_id = #{commetParntId,jdbcType=INTEGER},
+			</if>
+			<if test="commetJokeId != null">
+				commet_joke_id = #{commetJokeId,jdbcType=INTEGER},
+			</if>
+			<if test="commetJokeType != null">
+				commet_joke_type = #{commetJokeType,jdbcType=VARCHAR},
+			</if>
+			<if test="userCode != null">
+				user_code = #{userCode,jdbcType=VARCHAR},
+			</if>
+			<if test="commetTime != null">
+				commet_time = #{commetTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="commetAgreeCount != null">
+				commet_agree_count = #{commetAgreeCount,jdbcType=INTEGER},
+			</if>
+			<if test="commetDisagreeCount != null">
+				commet_disagree_count = #{commetDisagreeCount,jdbcType=INTEGER},
+			</if>
+			<if test="commetContent != null">
+				commet_content = #{commetContent,jdbcType=LONGVARCHAR},
+			</if>
+		</set>
+		where commet_id = #{commetId,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKeyWithBLOBs" parameterType="com.shop.base.entity.JokeCommetModel">
+		update tbl_joke_commet
+		set commet_parnt_id = #{commetParntId,jdbcType=INTEGER},
+		commet_joke_id = #{commetJokeId,jdbcType=INTEGER},
+		commet_joke_type = #{commetJokeType,jdbcType=VARCHAR},
+		user_code = #{userCode,jdbcType=VARCHAR},
+		commet_time = #{commetTime,jdbcType=TIMESTAMP},
+		commet_agree_count = #{commetAgreeCount,jdbcType=INTEGER},
+		commet_disagree_count = #{commetDisagreeCount,jdbcType=INTEGER},
+		commet_content = #{commetContent,jdbcType=LONGVARCHAR}
+		where commet_id = #{commetId,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.shop.base.entity.JokeCommetModel">
+		update tbl_joke_commet
+		set commet_parnt_id = #{commetParntId,jdbcType=INTEGER},
+		commet_joke_id = #{commetJokeId,jdbcType=INTEGER},
+		commet_joke_type = #{commetJokeType,jdbcType=VARCHAR},
+		user_code = #{userCode,jdbcType=VARCHAR},
+		commet_time = #{commetTime,jdbcType=TIMESTAMP},
+		commet_agree_count = #{commetAgreeCount,jdbcType=INTEGER},
+		commet_disagree_count = #{commetDisagreeCount,jdbcType=INTEGER}
+		where commet_id = #{commetId,jdbcType=INTEGER}
+	</update>
+	<update id="updateAgreeCount" parameterType="com.shop.base.entity.JokeCommetModel">
+		update tbl_joke_commet
+		set
+		commet_agree_count = commet_agree_count+1
+		where commet_id = #{commetId,jdbcType=INTEGER}
+	</update>
+	<update id="updateDisagreeCount" parameterType="com.shop.base.entity.JokeCommetModel">
+		update tbl_joke_commet
+		set
+		commet_disagree_count = commet_disagree_count+1
+		where commet_id = #{commetId,jdbcType=INTEGER}
+	</update>
 </mapper>

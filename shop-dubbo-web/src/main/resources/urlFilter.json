@@ -1,0 +1,31 @@
+{
+	page_404:{msg:'请求不存在！',redirect_url:''},
+	page_noright:{msg:'对不起您没有访问权限！',redirect_url:''},
+	loginUrl:'/view/base/main/login',
+		passUrl:[
+		'.*.*'
+		],
+	cookie:'.*.HTML',
+	isMobileDevice:"android,iphone,ipod,ipad",
+	eg:[
+		'(.*/act/.*)',
+		'(.*/base/authoriza/user/(?!del).*)|(.*/base/authoriza/basetree/.*)',
+		'(.*/base/authoriza/login/.*)',
+		'(.*/base/authoriza/loginWeb/.*)',
+		'(/lxyz/)|(/vito.web/)|(/)',
+		'(.*/party/.*)|(.*/video/.*)',
+		'.*/resource/.*',
+		'.*.(js|css|png|html|jpeg|jpg|gif|svg|mp3|HTML)',
+		'.*/view/base/main/(login|register)',
+		'.*/base/authoriza/notice/click.htm',
+		'.*/payment/smkPayOrder/.*.htm',
+		'.*/pro/cost/(proPayMent|proUserCost)/.*.htm',
+		'.*/pro/cost/proItemStandard/(queryUserHouseStandard|queryUserParkStandard).htm',
+		'.*/ecs/comment/comment/(saveComment|findCommentsByGoods|queryComment).htm',
+		'.*/ecs/common/ad.*',
+		'.*/pro/comm/proCommunity/.*.htm',
+		'.*/ecs/goods/ecsGoods/.*.htm',
+		'.*/ecs/es/search/queryGoods.htm',
+		'.*/authoriza/conmonData/.*',
+		'.*/base/authoriza/fileup/upload.htm',]
+}

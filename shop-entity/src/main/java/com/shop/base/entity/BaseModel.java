@@ -5,10 +5,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class BaseModel {
 	private Integer pageNo = 1;
 
+	@SuppressWarnings("unused")
 	private Integer rowNo = 0;
 
 	private Integer pageSize = 10;
-
 	@JsonIgnore
 	public Integer getPageNo() {
 		return pageNo;
@@ -20,7 +20,7 @@ public class BaseModel {
 
 	@JsonIgnore
 	public Integer getRowNo() {
-		return rowNo;
+		return (getPageNo() - 1) * getPageSize();
 	}
 
 	public void setRowNo(Integer rowNo) {

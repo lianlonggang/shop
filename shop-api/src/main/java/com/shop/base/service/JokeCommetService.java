@@ -1,5 +1,7 @@
 package com.shop.base.service;
 
+import java.util.List;
+
 import com.shop.base.entity.JokeCommetModel;
 
 public interface JokeCommetService {
@@ -11,9 +13,16 @@ public interface JokeCommetService {
 
 	JokeCommetModel selectByPrimaryKey(Integer commetId);
 
+	List<JokeCommetModel> queryCommetList(JokeCommetModel record);
+
+	JokeCommetModel queryGodCommet(JokeCommetModel record);
+
 	int updateByPrimaryKeySelective(JokeCommetModel record);
 
 	int updateByPrimaryKeyWithBLOBs(JokeCommetModel record);
 
 	int updateByPrimaryKey(JokeCommetModel record);
+
+	// 点赞
+	int commetAgree(String commetId, String userCode, String agreeType);
 }

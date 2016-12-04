@@ -4,68 +4,98 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class JokeCommetModel extends BaseModel implements Serializable {
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = -5779886939218630239L;
+	private static final long serialVersionUID = 584751744877589602L;
 
 	private Integer commetId;
 
-	private Integer commetJokeId;
+    private Integer commetParntId;
 
-	private Integer userCode;
+    private Integer commetJokeId;
 
-	private Date commetTime;
+    private String commetJokeType;
 
-	private Integer commetAgreeCount;
+    private String userCode;
 
-	private String commetContent;
+    private Date commetTime;
 
-	public Integer getCommetId() {
-		return commetId;
-	}
+    private Integer commetAgreeCount;
 
-	public void setCommetId(Integer commetId) {
-		this.commetId = commetId;
-	}
+    private Integer commetDisagreeCount;
 
-	public Integer getCommetJokeId() {
-		return commetJokeId;
-	}
+    private String commetContent;
 
-	public void setCommetJokeId(Integer commetJokeId) {
-		this.commetJokeId = commetJokeId;
-	}
+    public Integer getCommetId() {
+        return commetId;
+    }
 
-	public Integer getUserCode() {
-		return userCode;
-	}
+    public void setCommetId(Integer commetId) {
+        this.commetId = commetId;
+    }
 
-	public void setUserCode(Integer userCode) {
-		this.userCode = userCode;
-	}
+    public Integer getCommetParntId() {
+        return commetParntId;
+    }
 
-	public Date getCommetTime() {
-		return commetTime;
-	}
+    public void setCommetParntId(Integer commetParntId) {
+        this.commetParntId = commetParntId;
+    }
 
-	public void setCommetTime(Date commetTime) {
-		this.commetTime = commetTime;
-	}
+    public Integer getCommetJokeId() {
+        return commetJokeId;
+    }
 
-	public Integer getCommetAgreeCount() {
-		return commetAgreeCount;
-	}
+    public void setCommetJokeId(Integer commetJokeId) {
+        this.commetJokeId = commetJokeId;
+    }
 
-	public void setCommetAgreeCount(Integer commetAgreeCount) {
-		this.commetAgreeCount = commetAgreeCount;
-	}
+    public String getCommetJokeType() {
+        return commetJokeType;
+    }
 
-	public String getCommetContent() {
-		return commetContent;
-	}
+    public void setCommetJokeType(String commetJokeType) {
+        this.commetJokeType = commetJokeType == null ? null : commetJokeType.trim();
+    }
 
-	public void setCommetContent(String commetContent) {
-		this.commetContent = commetContent == null ? null : commetContent.trim();
-	}
+    public String getUserCode() {
+        return userCode;
+    }
+
+    public void setUserCode(String userCode) {
+        this.userCode = userCode;
+    }
+
+    public Date getCommetTime() {
+        return commetTime;
+    }
+
+    public void setCommetTime(Date commetTime) {
+        this.commetTime = commetTime;
+    }
+
+    public Integer getCommetAgreeCount() {
+        return commetAgreeCount;
+    }
+
+    public void setCommetAgreeCount(Integer commetAgreeCount) {
+        this.commetAgreeCount = commetAgreeCount;
+    }
+
+    public Integer getCommetDisagreeCount() {
+        return commetDisagreeCount;
+    }
+
+    public void setCommetDisagreeCount(Integer commetDisagreeCount) {
+        this.commetDisagreeCount = commetDisagreeCount;
+    }
+
+    public String getCommetContent() {
+        return commetContent;
+    }
+
+    public void setCommetContent(String commetContent) {
+        this.commetContent = commetContent == null ? null : commetContent.trim();
+    }
 }

@@ -1,0 +1,10 @@
+<urlrewrite>
+        <rule>
+            <from>/view/(.*)\?(.*)</from>
+            <to>/$1.jsp</to>
+        </rule>
+         <rule>
+            <from>/view/(.*)</from>
+            <to>/$1.jsp</to>
+        </rule>
+</urlrewrite>
