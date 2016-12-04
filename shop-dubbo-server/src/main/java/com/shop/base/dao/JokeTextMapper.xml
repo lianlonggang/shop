@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shop.base.dao.JokeTextMapper">
+  <resultMap id="BaseResultMap" type="com.shop.base.entity.JokeTextModel">
+    <id column="id" jdbcType="INTEGER" property="id" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.shop.base.entity.JokeTextModel">
+    <result column="article_title" jdbcType="LONGVARCHAR" property="articleTitle" />
+    <result column="article_content" jdbcType="LONGVARCHAR" property="articleContent" />
+    <result column="article_author" jdbcType="LONGVARCHAR" property="articleAuthor" />
+    <result column="article_publish_time" jdbcType="LONGVARCHAR" property="articlePublishTime" />
+    <result column="article_avatar" jdbcType="LONGVARCHAR" property="articleAvatar" />
+    <result column="article_categories" jdbcType="LONGVARCHAR" property="articleCategories" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id
+  </sql>
+  <sql id="Blob_Column_List">
+    article_title, article_content, article_author, from_unixtime(article_publish_time,'%Y-%m-%d') article_publish_time, article_avatar, 
+    article_categories
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from tbl_sjs_joke_text
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="queryJokeTextNewList" parameterType="com.shop.base.entity.JokeTextModel" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from tbl_sjs_joke_text
+    where id > (SELECT max(joke_img_id) FROM tbl_sjs_joke_img_last_id)
+    limit #{rowNo,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from tbl_sjs_joke_text
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.shop.base.entity.JokeTextModel">
+    insert into tbl_sjs_joke_text (id, article_title, article_content, 
+      article_author, article_publish_time, 
+      article_avatar, article_categories
+      )
+    values (#{id,jdbcType=INTEGER}, #{articleTitle,jdbcType=LONGVARCHAR}, #{articleContent,jdbcType=LONGVARCHAR}, 
+      #{articleAuthor,jdbcType=LONGVARCHAR}, #{articlePublishTime,jdbcType=LONGVARCHAR}, 
+      #{articleAvatar,jdbcType=LONGVARCHAR}, #{articleCategories,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.shop.base.entity.JokeTextModel">
+    insert into tbl_sjs_joke_text
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="articleTitle != null">
+        article_title,
+      </if>
+      <if test="articleContent != null">
+        article_content,
+      </if>
+      <if test="articleAuthor != null">
+        article_author,
+      </if>
+      <if test="articlePublishTime != null">
+        article_publish_time,
+      </if>
+      <if test="articleAvatar != null">
+        article_avatar,
+      </if>
+      <if test="articleCategories != null">
+        article_categories,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="articleTitle != null">
+        #{articleTitle,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="articleContent != null">
+        #{articleContent,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="articleAuthor != null">
+        #{articleAuthor,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="articlePublishTime != null">
+        #{articlePublishTime,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="articleAvatar != null">
+        #{articleAvatar,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="articleCategories != null">
+        #{articleCategories,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.shop.base.entity.JokeTextModel">
+    update tbl_sjs_joke_text
+    <set>
+      <if test="articleTitle != null">
+        article_title = #{articleTitle,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="articleContent != null">
+        article_content = #{articleContent,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="articleAuthor != null">
+        article_author = #{articleAuthor,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="articlePublishTime != null">
+        article_publish_time = #{articlePublishTime,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="articleAvatar != null">
+        article_avatar = #{articleAvatar,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="articleCategories != null">
+        article_categories = #{articleCategories,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.shop.base.entity.JokeTextModel">
+    update tbl_sjs_joke_text
+    set article_title = #{articleTitle,jdbcType=LONGVARCHAR},
+      article_content = #{articleContent,jdbcType=LONGVARCHAR},
+      article_author = #{articleAuthor,jdbcType=LONGVARCHAR},
+      article_publish_time = #{articlePublishTime,jdbcType=LONGVARCHAR},
+      article_avatar = #{articleAvatar,jdbcType=LONGVARCHAR},
+      article_categories = #{articleCategories,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>
