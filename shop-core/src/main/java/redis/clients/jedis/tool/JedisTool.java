@@ -361,10 +361,10 @@ public class JedisTool {
 	public static void delMapKey(String jKey,Object key)throws Exception{
 		delMapKey (jKey,new Object[]{key});
 	}
-	public static void setList(String jKey,List<Object> list) throws Exception{
+	public static void setList(String jKey,List<?> list) throws Exception{
 		setList(jKey,list,null);
 	}
-	public static void setList(String jKey,List<Object> list,Integer seconds) throws Exception{
+	public static void setList(String jKey,List<?> list,Integer seconds) throws Exception{
 		if(list==null||list.size()==0){
 			return ;
 		}

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shop.base.dao.JokeLastIdMapper">
+	<resultMap id="BaseResultMap" type="com.shop.base.entity.JokeLastIdModel">
+		<id column="id" jdbcType="INTEGER" property="id" />
+		<result column="joke_type" jdbcType="VARCHAR" property="jokeType" />
+		<result column="joke_img_id" jdbcType="INTEGER" property="jokeImgId" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, joke_type, joke_img_id
+	</sql>
+	<select id="selectByPrimaryKey" parameterType="java.lang.Integer"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from tbl_sjs_joke_last_id
+		where id = #{id,jdbcType=INTEGER}
+	</select>
+	<select id="findByModel" parameterType="com.shop.base.entity.JokeLastIdModel"
+		resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from tbl_sjs_joke_last_id
+		where 1=1
+		<if test="id!=null">
+			id = #{id,jdbcType=INTEGER}
+		</if>
+		<if test="jokeType!=null">
+			and joke_type = #{jokeType,jdbcType=VARCHAR}
+		</if>
+		
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+		delete from tbl_sjs_joke_last_id
+		where id = #{id,jdbcType=INTEGER}
+	</delete>
+	<insert id="insert" parameterType="com.shop.base.entity.JokeLastIdModel">
+		insert into tbl_sjs_joke_last_id (id, joke_type, joke_img_id
+		)
+		values (#{id,jdbcType=INTEGER}, #{jokeType,jdbcType=VARCHAR},
+		#{jokeImgId,jdbcType=INTEGER}
+		)
+	</insert>
+	<insert id="insertSelective" parameterType="com.shop.base.entity.JokeLastIdModel">
+		insert into tbl_sjs_joke_last_id
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				id,
+			</if>
+			<if test="jokeType != null">
+				joke_type,
+			</if>
+			<if test="jokeImgId != null">
+				joke_img_id,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="id != null">
+				#{id,jdbcType=INTEGER},
+			</if>
+			<if test="jokeType != null">
+				#{jokeType,jdbcType=VARCHAR},
+			</if>
+			<if test="jokeImgId != null">
+				#{jokeImgId,jdbcType=INTEGER},
+			</if>
+		</trim>
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.shop.base.entity.JokeLastIdModel">
+		update tbl_sjs_joke_last_id
+		<set>
+			<if test="jokeType != null">
+				joke_type = #{jokeType,jdbcType=VARCHAR},
+			</if>
+			<if test="jokeImgId != null">
+				joke_img_id = #{jokeImgId,jdbcType=INTEGER},
+			</if>
+		</set>
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="updateByPrimaryKey" parameterType="com.shop.base.entity.JokeLastIdModel">
+		update tbl_sjs_joke_last_id
+		set joke_type = #{jokeType,jdbcType=VARCHAR},
+		joke_img_id = #{jokeImgId,jdbcType=INTEGER}
+		where id = #{id,jdbcType=INTEGER}
+	</update>
+	<update id="addLastId" parameterType="string">
+		UPDATE tbl_sjs_joke_last_id
+		SET joke_img_id = (
+			joke_img_id + (
+				SELECT CODE FROM tbl_base_code WHERE 
+				<if test="jokeType=='img'">
+					type = 'imgPerCount'
+				</if>
+				<if test="jokeType=='text'">
+					type = 'textPerCount'
+				</if>
+			))
+			WHERE joke_type = #{jokeType,jdbcType=VARCHAR}
+	</update>
+</mapper>

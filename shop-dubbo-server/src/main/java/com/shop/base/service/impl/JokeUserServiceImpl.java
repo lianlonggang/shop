@@ -42,4 +42,9 @@ public class JokeUserServiceImpl implements JokeUserService {
 		return jokeUserMapper.updateByPrimaryKey(record);
 	}
 
+	@Override
+	public JokeUserModel selectByUserCode(String userCode) {
+		return jokeUserMapper.selectByUserCode(userCode);
+	}
+
 }

@@ -1,8 +1,11 @@
 package com.shop.base.action;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -10,18 +13,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.fastjson.JSONObject;
+import com.shop.base.convert.Content;
 import com.shop.base.entity.JokeAgreeHisModel;
 import com.shop.base.entity.JokeCommetModel;
 import com.shop.base.entity.JokeImgModel;
 import com.shop.base.entity.JokeTextModel;
 import com.shop.base.entity.JokeUserModel;
 import com.shop.base.model.Result;
+import com.shop.base.service.BaseCodeService;
 import com.shop.base.service.JokeAgreeHisService;
 import com.shop.base.service.JokeCommetService;
 import com.shop.base.service.JokeImgService;
 import com.shop.base.service.JokeTextService;
 import com.shop.base.service.JokeUserService;
+import com.shop.base.util.HttpsClient;
 import com.shop.base.util.StringUtil;
+import com.shop.base.wxuser.AES;
 
 @Controller
 @RequestMapping("/joke")
@@ -38,6 +46,8 @@ public class JokeAction {
 	private JokeCommetService jokeCommetService;
 	@Reference
 	private JokeAgreeHisService jokeAgreeHisService;
+	@Reference
+	private BaseCodeService baseCodeService;
 
 	/**
 	 * 获取图片列表json
@@ -84,24 +94,55 @@ public class JokeAction {
 	 */
 	@RequestMapping("/saveJokeUser")
 	@ResponseBody
-	public Result saveJokeUser(JokeUserModel jokeUser) {
+	public Result saveJokeUser(JokeUserModel jokeUser,String encryptedData,String iv,String resCode) {
 		Result res = new Result();
-		jokeUser.setRegistTime(new Date());
-		try{
-			int count = jokeUserService.insert(jokeUser);
-			if(count==1){
-				res.setCode(Result.CODE_OK);
-			}else{
+		//获取sessionKey
+		Map<String , String> params = new HashMap<String,String>();
+		params.put("appid", baseCodeService.getCodeByType(Content.BASE_WX_APP_ID));
+		params.put("secret", baseCodeService.getCodeByType(Content.BASE_WX_APP_SERCRET));
+		params.put("js_code",resCode);
+		params.put("grant_type",baseCodeService.getCodeByType(Content.BASE_WX_GRANT_TYPE));
+		JSONObject json = HttpsClient.httpsRequest(baseCodeService.getCodeByType(Content.BASE_WX_JTS_URL), "GET", params);
+		String session_key = json.getString("session_key");
+		String openid = json.getString("openid");
+		JokeUserModel user =  jokeUserService.selectByUserCode(openid);
+		if(user==null){
+			try{
+				//解密encryptedData
+				AES aes = new AES();
+				byte[] resultByte = aes.decrypt(Base64.decodeBase64(encryptedData), Base64.decodeBase64(session_key), Base64.decodeBase64(iv));
+				if(null != resultByte && resultByte.length > 0){
+					JSONObject userInfo = JSONObject.parseObject(new String(resultByte, "UTF-8"));
+					jokeUser.setRegistTime(new Date());
+					jokeUser.setUserCode(userInfo.getString("openId"));
+					jokeUser.setUserName(userInfo.getString("nickName"));
+					jokeUser.setUserGender(userInfo.getString("gender"));
+					jokeUser.setUserCity(userInfo.getString("city"));
+					jokeUser.setUserProvince(userInfo.getString("province"));
+					jokeUser.setUserCountry(userInfo.getString("country"));
+					jokeUser.setUserAvatarUrl(userInfo.getString("avatarUrl"));
+					int count = jokeUserService.insert(jokeUser);
+					if(count==1){
+						res.setCode(Result.CODE_OK);
+					}else{
+						res.setCode(Result.CODE_ERROR);
+						res.setMsg("保存用户信息失败");
+						return res;
+					}
+				}
+				
+			}catch(Exception e){
+				logger.error(e.getMessage());
 				res.setCode(Result.CODE_ERROR);
 				res.setMsg("保存用户信息失败");
-				return res;
 			}
-		}catch(Exception e){
-			logger.error(e.getMessage());
-			res.setCode(Result.CODE_ERROR);
-			res.setMsg("保存用户信息失败");
+			return res;
+		}else{
+			logger.error("已存在该用户");
+			res.setCode(Result.CODE_OK);
+			return res;
 		}
-		return res;
+		
 	}
 	
 	/**
@@ -234,6 +275,33 @@ public class JokeAction {
 		res.setCode(Result.CODE_OK);
 		res.setData(jokeTextList);
 		return res;
+	}
+	
+	/**
+	 * 获取神评
+	 * 
+	 * @param jokeText
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/test")
+	@ResponseBody
+	public Result test(Map<String,Object> map) {
+		Result res = new Result();
+		String appid = baseCodeService.getCodeByType(Content.BASE_WX_APP_ID);
+		logger.info(appid);
+		return res;
+	}
+	
+	public static void main(String[] args) {
+//		Map<String , String> params = new HashMap<String,String>();
+//		params.put("appid", Content.WX_APPID);
+//		params.put("secret", Content.WX_SECRET);
+//		params.put("js_code","003vPPHL1nJ6y215Z2EL1E8SHL1vPPHw");
+//		params.put("grant_type",Content.WX_GRANT_TYPE);
+//		//"appid=wx3d05766b984de06e&secret=9ce946c70c47e1eb2e9106cef958072c&js_code=013CuVM31uYUVM1anKO31gxQM31CuVMZ&grant_type=authorization_code"
+//		HttpsClient.httpsRequest(Content.WX_JSCODE_TO_SESSION, 
+//				"GET", params);
 	}
 
 }

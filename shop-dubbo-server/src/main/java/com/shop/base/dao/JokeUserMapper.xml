@@ -22,6 +22,12 @@
     from tbl_joke_user
     where user_id = #{userId,jdbcType=INTEGER}
   </select>
+  <select id="selectByUserCode" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from tbl_joke_user
+    where user_code = #{userCode,jdbcType=VARCHAR}
+  </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from tbl_joke_user
     where user_id = #{userId,jdbcType=INTEGER}

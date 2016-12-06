@@ -33,7 +33,7 @@
     ,
     <include refid="Blob_Column_List" />
     from tbl_sjs_joke_img
-    where id > (SELECT max(joke_img_id) FROM tbl_sjs_joke_img_last_id)
+    where id > (SELECT joke_img_id FROM tbl_sjs_joke_last_id where joke_type='img')
     limit #{rowNo,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">

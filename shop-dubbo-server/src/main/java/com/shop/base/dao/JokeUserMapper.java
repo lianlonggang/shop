@@ -10,6 +10,8 @@ public interface JokeUserMapper {
     int insertSelective(JokeUserModel record);
 
     JokeUserModel selectByPrimaryKey(Integer userId);
+    
+    JokeUserModel selectByUserCode(String userCode);
 
     int updateByPrimaryKeySelective(JokeUserModel record);
 

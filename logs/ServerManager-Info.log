@@ -1,0 +1,4 @@
+[INFO] [2016-12-05 20:30:45] com.shop.base.util.HttpsClient.httpsRequest(106) | {"errcode":40029,"errmsg":"invalid code, hints: [ req_id: 5TZuPa0045ns88 ]"}
+  [INFO] [2016-12-05 20:31:36] com.shop.base.util.HttpsClient.httpsRequest(106) | {"errcode":40029,"errmsg":"invalid code, hints: [ req_id: CTQ1PA0097ns88 ]"}
+  [INFO] [2016-12-05 20:32:20] com.shop.base.util.HttpsClient.httpsRequest(106) | {"session_key":"UQquIQywM0vC+TRnjVsL2g==","expires_in":2592000,"openid":"oTEIY0Y-fmSwYiNOM75J4XCIgffo"}
+  

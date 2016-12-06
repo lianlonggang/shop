@@ -1,8 +1,12 @@
 redis\clients\jedis\tool\JedisTool.class
+com\shop\base\util\JSONUtil.class
 com\shop\base\util\SpringApplicationContext.class
 com\shop\base\util\CacheTool.class
+com\shop\base\util\StringUtil.class
+com\shop\base\util\DateUtil.class
 com\shop\base\util\MD5Util.class
 redis\clients\jedis\tool\ServletContextListener.class
 com\shop\base\util\Contants.class
 com\shop\base\util\BaseUtil.class
+com\shop\base\util\FileUtil.class
 com\shop\base\util\Pty.class
