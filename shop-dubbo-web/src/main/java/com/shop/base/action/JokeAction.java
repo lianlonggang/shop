@@ -31,6 +31,8 @@ import com.shop.base.util.HttpsClient;
 import com.shop.base.util.StringUtil;
 import com.shop.base.wxuser.AES;
 
+import redis.clients.jedis.tool.JedisTool;
+
 @Controller
 @RequestMapping("/joke")
 public class JokeAction {
@@ -280,16 +282,25 @@ public class JokeAction {
 	/**
 	 * 获取神评
 	 * 
-	 * @param jokeText
+	 * @param 清空缓存
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping("/test")
+	@RequestMapping("/codeTypeCacheClear")
 	@ResponseBody
-	public Result test(Map<String,Object> map) {
+	public Result codeTypeCacheClear() {
 		Result res = new Result();
-		String appid = baseCodeService.getCodeByType(Content.BASE_WX_APP_ID);
-		logger.info(appid);
+		try {
+			JedisTool.del("baseCodeMap");
+			res.setCode(Result.CODE_OK);
+			res.setMsg("清空缓存成功");
+			logger.info("清空缓存成功");
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+			res.setCode(Result.CODE_OK);
+			res.setMsg("清空缓存失败");
+		}
 		return res;
 	}
 	
