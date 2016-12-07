@@ -28,6 +28,7 @@ import com.shop.base.service.JokeImgService;
 import com.shop.base.service.JokeTextService;
 import com.shop.base.service.JokeUserService;
 import com.shop.base.util.HttpsClient;
+import com.shop.base.util.SpringApplicationContext;
 import com.shop.base.util.StringUtil;
 import com.shop.base.wxuser.AES;
 
@@ -107,7 +108,14 @@ public class JokeAction {
 		JSONObject json = HttpsClient.httpsRequest(baseCodeService.getCodeByType(Content.BASE_WX_JTS_URL), "GET", params);
 		String session_key = json.getString("session_key");
 		String openid = json.getString("openid");
+		String sId = SpringApplicationContext.getSessionId();
 		JokeUserModel user =  jokeUserService.selectByUserCode(openid);
+		try {
+			JedisTool.setString(sId, openid, 36000);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		if(user==null){
 			try{
 				//解密encryptedData
@@ -126,6 +134,7 @@ public class JokeAction {
 					int count = jokeUserService.insert(jokeUser);
 					if(count==1){
 						res.setCode(Result.CODE_OK);
+						res.setsId(sId);
 					}else{
 						res.setCode(Result.CODE_ERROR);
 						res.setMsg("保存用户信息失败");
@@ -142,6 +151,7 @@ public class JokeAction {
 		}else{
 			logger.error("已存在该用户");
 			res.setCode(Result.CODE_OK);
+			res.setsId(sId);
 			return res;
 		}
 		
@@ -156,6 +166,11 @@ public class JokeAction {
 	@ResponseBody
 	public Result saveJokeCommet(JokeCommetModel jokeCommet) {
 		Result res = new Result();
+		if(StringUtil.isEmpty(jokeCommet.getsId())){
+			res.setCode(Result.CODE_PARA_ERROR);
+			res.setMsg("sessionID不能为空");
+			return res;
+		}
 		if(StringUtil.isEmpty(jokeCommet.getCommetJokeId())){
 			res.setCode(Result.CODE_PARA_ERROR);
 			res.setMsg("段子ID不能为空");
@@ -166,11 +181,19 @@ public class JokeAction {
 			res.setMsg("段子类型不能为空");
 			return res;
 		}
-		if(StringUtil.isEmpty(jokeCommet.getUserCode())){
-			res.setCode(Result.CODE_PARA_ERROR);
-			res.setMsg("用户账号不能为空");
-			return res;
+//		if(StringUtil.isEmpty(jokeCommet.getUserCode())){
+//			res.setCode(Result.CODE_PARA_ERROR);
+//			res.setMsg("用户账号不能为空");
+//			return res;
+//		}
+		String openId = "";
+		try {
+			openId = JedisTool.getString(jokeCommet.getsId());
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
+		jokeCommet.setUserCode(openId);
 		jokeCommet.setCommetTime(new Date());
 		jokeCommet.setCommetAgreeCount(0);
 		jokeCommet.setCommetDisagreeCount(0);
@@ -198,18 +221,23 @@ public class JokeAction {
 	 */
 	@RequestMapping("/commetAgree")
 	@ResponseBody
-	public Result commetAgree(String commetId,String userCode,String agreeType) {
+	public Result commetAgree(String commetId,String agreeType,String sId) {
 		Result res = new Result();
+		if(StringUtil.isEmpty(sId)){
+			res.setCode(Result.CODE_PARA_ERROR);
+			res.setMsg("sessionID不能为空");
+			return res;
+		}
 		if(StringUtil.isEmpty(commetId)){
 			res.setCode(Result.CODE_PARA_ERROR);
 			res.setMsg("评论ID不能为空");
 			return res;
 		}
-		if(StringUtil.isEmpty(userCode)){
-			res.setCode(Result.CODE_PARA_ERROR);
-			res.setMsg("用户账号不能为空");
-			return res;
-		}
+//		if(StringUtil.isEmpty(userCode)){
+//			res.setCode(Result.CODE_PARA_ERROR);
+//			res.setMsg("用户账号不能为空");
+//			return res;
+//		}
 		if(StringUtil.isEmpty(agreeType)){
 			res.setCode(Result.CODE_PARA_ERROR);
 			res.setMsg("点赞类型不能为空");
@@ -217,7 +245,14 @@ public class JokeAction {
 		}
 		try{
 			JokeAgreeHisModel model = new JokeAgreeHisModel();
-			model.setUserCode(userCode);
+			String openId = "";
+			try {
+				openId = JedisTool.getString(sId);
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			model.setUserCode(openId);
 			model.setCommetId(Integer.valueOf(commetId));
 			List<JokeAgreeHisModel> agreeHisList = jokeAgreeHisService.selectAgreeHisList(model);
 			if(agreeHisList.size()>0){
@@ -225,7 +260,7 @@ public class JokeAction {
 				res.setMsg("您已经点过赞了");
 				return res;
 			}
-			int count = jokeCommetService.commetAgree(commetId, userCode, agreeType);
+			int count = jokeCommetService.commetAgree(commetId, openId, agreeType);
 			if(count==2){
 				res.setCode(Result.CODE_OK);
 			}else{
@@ -253,10 +288,10 @@ public class JokeAction {
 	public Result getCommetList(JokeCommetModel jokeCommet) {
 		Result res = new Result();
 		logger.info("查询评论列表start");
-		List<JokeCommetModel> jokeTextList = jokeCommetService.queryCommetList(jokeCommet);
+		List<JokeCommetModel> commetList = jokeCommetService.queryCommetList(jokeCommet);
 		logger.info("查询评论列表end");
 		res.setCode(Result.CODE_OK);
-		res.setData(jokeTextList);
+		res.setData(commetList);
 		return res;
 	}
 	
@@ -272,10 +307,10 @@ public class JokeAction {
 	public Result getGodCommet(JokeCommetModel jokeCommet) {
 		Result res = new Result();
 		logger.info("查询神评start");
-		JokeCommetModel jokeTextList = jokeCommetService.queryGodCommet(jokeCommet);
+		JokeCommetModel godCommet = jokeCommetService.queryGodCommet(jokeCommet);
 		logger.info("查询神评end");
 		res.setCode(Result.CODE_OK);
-		res.setData(jokeTextList);
+		res.setData(godCommet);
 		return res;
 	}
 	

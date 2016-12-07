@@ -48,6 +48,7 @@ public class Result  implements Serializable{
 	private Object data;//返回的数据
 	private String dateTime;//返回的时间
 	private String msgId;//流水号
+	private String sId;
 	
 	public String getMsgId() {
 		return msgId;
@@ -90,4 +91,11 @@ public class Result  implements Serializable{
 		}
 		this.dateTime = dateTime;
 	}
+	public String getsId() {
+		return sId;
+	}
+	public void setsId(String sId) {
+		this.sId = sId;
+	}
+	
 }

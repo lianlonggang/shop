@@ -7,7 +7,7 @@ public class BaseModel {
 
 	@SuppressWarnings("unused")
 	private Integer rowNo = 0;
-
+	private String sId = "";
 	private Integer pageSize = 10;
 	@JsonIgnore
 	public Integer getPageNo() {
@@ -34,6 +34,15 @@ public class BaseModel {
 
 	public void setPageSize(Integer pageSize) {
 		this.pageSize = pageSize;
+	}
+
+	@JsonIgnore
+	public String getsId() {
+		return sId;
+	}
+
+	public void setsId(String sId) {
+		this.sId = sId;
 	}
 	
 	
