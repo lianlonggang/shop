@@ -3,17 +3,15 @@ package com.shop.base.entity;
 import java.io.Serializable;
 import java.util.Date;
 
-public class JokeAgreeHisModel extends BaseModel implements Serializable{
+public class JokeCommetAgreeHisModel extends BaseModel implements Serializable {
     /**
 	 * 
 	 */
-	private static final long serialVersionUID = 9220447558338810129L;
+	private static final long serialVersionUID = -7028052026852432951L;
 
 	private Integer agreeHisId;
 
-    private Integer jokeId;
-
-    private String jokeType;
+    private Integer commetId;
 
     private String userCode;
 
@@ -29,20 +27,12 @@ public class JokeAgreeHisModel extends BaseModel implements Serializable{
         this.agreeHisId = agreeHisId;
     }
 
-    public Integer getJokeId() {
-        return jokeId;
+    public Integer getCommetId() {
+        return commetId;
     }
 
-    public void setJokeId(Integer jokeId) {
-        this.jokeId = jokeId;
-    }
-
-    public String getJokeType() {
-        return jokeType;
-    }
-
-    public void setJokeType(String jokeType) {
-        this.jokeType = jokeType == null ? null : jokeType.trim();
+    public void setCommetId(Integer commetId) {
+        this.commetId = commetId;
     }
 
     public String getUserCode() {

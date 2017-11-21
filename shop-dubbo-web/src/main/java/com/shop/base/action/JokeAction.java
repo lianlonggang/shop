@@ -1,5 +1,6 @@
 package com.shop.base.action;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +17,7 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSONObject;
 import com.shop.base.convert.Content;
 import com.shop.base.entity.JokeAgreeHisModel;
+import com.shop.base.entity.JokeCommetAgreeHisModel;
 import com.shop.base.entity.JokeCommetModel;
 import com.shop.base.entity.JokeImgModel;
 import com.shop.base.entity.JokeTextModel;
@@ -23,8 +25,11 @@ import com.shop.base.entity.JokeUserModel;
 import com.shop.base.model.Result;
 import com.shop.base.service.BaseCodeService;
 import com.shop.base.service.JokeAgreeHisService;
+import com.shop.base.service.JokeCommetAgreeHisService;
 import com.shop.base.service.JokeCommetService;
+import com.shop.base.service.JokeImgReviewedService;
 import com.shop.base.service.JokeImgService;
+import com.shop.base.service.JokeTextReviewedService;
 import com.shop.base.service.JokeTextService;
 import com.shop.base.service.JokeUserService;
 import com.shop.base.util.HttpsClient;
@@ -44,9 +49,15 @@ public class JokeAction {
 	@Reference
 	private JokeTextService jokeTextService;
 	@Reference
+	private JokeImgReviewedService jokeImgReviewedService;
+	@Reference
+	private JokeTextReviewedService jokeTextReviewedService;
+	@Reference
 	private JokeUserService jokeUserService;
 	@Reference
 	private JokeCommetService jokeCommetService;
+	@Reference
+	private JokeCommetAgreeHisService jokeCommetAgreeHisService;
 	@Reference
 	private JokeAgreeHisService jokeAgreeHisService;
 	@Reference
@@ -63,8 +74,28 @@ public class JokeAction {
 	@ResponseBody
 	public Result getJokeImgList(JokeImgModel jokeImg) {
 		Result res = new Result();
+		String reviewFlag = baseCodeService.getCodeByType(Content.BASE_REVIEW_FLAG);
+		
+		if (StringUtil.isEmpty(jokeImg.getsId())) {
+			res.setCode(Result.CODE_PARA_ERROR);
+			res.setMsg("sessionID不能为空");
+			return res;
+		}
 		logger.info("查询图片列表start");
-		List<JokeImgModel> jokeImgList = jokeImgService.queryJokeImgNewList(jokeImg);
+		String openId = "";
+		try {
+			openId = JedisTool.getString(jokeImg.getsId());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		jokeImg.setParamUserCode(openId);
+		List<JokeImgModel> jokeImgList = new ArrayList<JokeImgModel>();
+		if("1".equals(reviewFlag)){
+			jokeImgList = jokeImgReviewedService.queryJokeImgNewList(jokeImg);
+		}else{
+			jokeImgList = jokeImgService.queryJokeImgNewList(jokeImg);
+		}
 		logger.info("查询图片列表end");
 		res.setCode(Result.CODE_OK);
 		res.setData(jokeImgList);
@@ -82,46 +113,68 @@ public class JokeAction {
 	@ResponseBody
 	public Result getJokeTextList(JokeTextModel jokeText) {
 		Result res = new Result();
+		String reviewFlag = baseCodeService.getCodeByType(Content.BASE_REVIEW_FLAG);
+		if (StringUtil.isEmpty(jokeText.getsId())) {
+			res.setCode(Result.CODE_PARA_ERROR);
+			res.setMsg("sessionID不能为空");
+			return res;
+		}
 		logger.info("查询文字列表start");
-		List<JokeTextModel> jokeTextList = jokeTextService.queryJokeTextNewList(jokeText);
+		String openId = "";
+		try {
+			openId = JedisTool.getString(jokeText.getsId());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		jokeText.setParamUserCode(openId);
+		List<JokeTextModel> jokeTextList = new ArrayList<>();
+		if("1".equals(reviewFlag)){
+			jokeTextList = jokeTextReviewedService.queryJokeTextNewList(jokeText);
+		}else{
+			jokeTextList = jokeTextService.queryJokeTextNewList(jokeText);
+		}
 		logger.info("查询文字列表end");
 		res.setCode(Result.CODE_OK);
 		res.setData(jokeTextList);
 		return res;
 	}
-	
+
 	/**
 	 * 保存用户信息
+	 * 
 	 * @param jokeUser
 	 * @return
 	 */
 	@RequestMapping("/saveJokeUser")
 	@ResponseBody
-	public Result saveJokeUser(JokeUserModel jokeUser,String encryptedData,String iv,String resCode) {
+	public Result saveJokeUser(JokeUserModel jokeUser, String encryptedData, String iv, String resCode) {
 		Result res = new Result();
-		//获取sessionKey
-		Map<String , String> params = new HashMap<String,String>();
+		// 获取sessionKey
+		Map<String, String> params = new HashMap<String, String>();
 		params.put("appid", baseCodeService.getCodeByType(Content.BASE_WX_APP_ID));
 		params.put("secret", baseCodeService.getCodeByType(Content.BASE_WX_APP_SERCRET));
-		params.put("js_code",resCode);
-		params.put("grant_type",baseCodeService.getCodeByType(Content.BASE_WX_GRANT_TYPE));
-		JSONObject json = HttpsClient.httpsRequest(baseCodeService.getCodeByType(Content.BASE_WX_JTS_URL), "GET", params);
+		params.put("js_code", resCode);
+		params.put("grant_type", baseCodeService.getCodeByType(Content.BASE_WX_GRANT_TYPE));
+		JSONObject json = HttpsClient.httpsRequest(baseCodeService.getCodeByType(Content.BASE_WX_JTS_URL), "GET",
+				params);
 		String session_key = json.getString("session_key");
 		String openid = json.getString("openid");
 		String sId = SpringApplicationContext.getSessionId();
-		JokeUserModel user =  jokeUserService.selectByUserCode(openid);
+		JokeUserModel user = jokeUserService.selectByUserCode(openid);
 		try {
 			JedisTool.setString(sId, openid, 36000);
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		if(user==null){
-			try{
-				//解密encryptedData
+		if (user == null) {
+			try {
+				// 解密encryptedData
 				AES aes = new AES();
-				byte[] resultByte = aes.decrypt(Base64.decodeBase64(encryptedData), Base64.decodeBase64(session_key), Base64.decodeBase64(iv));
-				if(null != resultByte && resultByte.length > 0){
+				byte[] resultByte = aes.decrypt(Base64.decodeBase64(encryptedData), Base64.decodeBase64(session_key),
+						Base64.decodeBase64(iv));
+				if (null != resultByte && resultByte.length > 0) {
 					JSONObject userInfo = JSONObject.parseObject(new String(resultByte, "UTF-8"));
 					jokeUser.setRegistTime(new Date());
 					jokeUser.setUserCode(userInfo.getString("openId"));
@@ -132,33 +185,34 @@ public class JokeAction {
 					jokeUser.setUserCountry(userInfo.getString("country"));
 					jokeUser.setUserAvatarUrl(userInfo.getString("avatarUrl"));
 					int count = jokeUserService.insert(jokeUser);
-					if(count==1){
+					if (count == 1) {
 						res.setCode(Result.CODE_OK);
 						res.setsId(sId);
-					}else{
+					} else {
 						res.setCode(Result.CODE_ERROR);
 						res.setMsg("保存用户信息失败");
 						return res;
 					}
 				}
-				
-			}catch(Exception e){
+
+			} catch (Exception e) {
 				logger.error(e.getMessage());
 				res.setCode(Result.CODE_ERROR);
 				res.setMsg("保存用户信息失败");
 			}
 			return res;
-		}else{
+		} else {
 			logger.error("已存在该用户");
 			res.setCode(Result.CODE_OK);
 			res.setsId(sId);
 			return res;
 		}
-		
+
 	}
-	
+
 	/**
 	 * 保存评论信息
+	 * 
 	 * @param jokeUser
 	 * @return
 	 */
@@ -166,26 +220,26 @@ public class JokeAction {
 	@ResponseBody
 	public Result saveJokeCommet(JokeCommetModel jokeCommet) {
 		Result res = new Result();
-		if(StringUtil.isEmpty(jokeCommet.getsId())){
+		if (StringUtil.isEmpty(jokeCommet.getsId())) {
 			res.setCode(Result.CODE_PARA_ERROR);
 			res.setMsg("sessionID不能为空");
 			return res;
 		}
-		if(StringUtil.isEmpty(jokeCommet.getCommetJokeId())){
+		if (StringUtil.isEmpty(jokeCommet.getCommetJokeId())) {
 			res.setCode(Result.CODE_PARA_ERROR);
 			res.setMsg("段子ID不能为空");
 			return res;
 		}
-		if(StringUtil.isEmpty(jokeCommet.getCommetJokeType())){
+		if (StringUtil.isEmpty(jokeCommet.getCommetJokeType())) {
 			res.setCode(Result.CODE_PARA_ERROR);
 			res.setMsg("段子类型不能为空");
 			return res;
 		}
-//		if(StringUtil.isEmpty(jokeCommet.getUserCode())){
-//			res.setCode(Result.CODE_PARA_ERROR);
-//			res.setMsg("用户账号不能为空");
-//			return res;
-//		}
+		// if(StringUtil.isEmpty(jokeCommet.getUserCode())){
+		// res.setCode(Result.CODE_PARA_ERROR);
+		// res.setMsg("用户账号不能为空");
+		// return res;
+		// }
 		String openId = "";
 		try {
 			openId = JedisTool.getString(jokeCommet.getsId());
@@ -197,16 +251,16 @@ public class JokeAction {
 		jokeCommet.setCommetTime(new Date());
 		jokeCommet.setCommetAgreeCount(0);
 		jokeCommet.setCommetDisagreeCount(0);
-		try{
+		try {
 			int count = jokeCommetService.insert(jokeCommet);
-			if(count==1){
+			if (count == 1) {
 				res.setCode(Result.CODE_OK);
-			}else{
+			} else {
 				res.setCode(Result.CODE_ERROR);
 				res.setMsg("保存评论失败");
 				return res;
 			}
-		}catch(Exception e){
+		} catch (Exception e) {
 			logger.error(e.getMessage());
 			res.setCode(Result.CODE_ERROR);
 			res.setMsg("评论保存失败");
@@ -215,36 +269,119 @@ public class JokeAction {
 	}
 	
 	/**
-	 * 点赞
+	 * 段子点赞
+	 * @param jokeId
+	 * @param jokeType
+	 * @param agreeType
+	 * @param sId
+	 * @return
+	 */
+	@RequestMapping("/jokeAgree")
+	@ResponseBody
+	public Result jokeAgree(String jokeId, String jokeType, String agreeType, String sId) {
+		Result res = new Result();
+		if (StringUtil.isEmpty(sId)) {
+			res.setCode(Result.CODE_PARA_ERROR);
+			res.setMsg("sessionID不能为空");
+			res.setData(0);
+			return res;
+		}
+		if (StringUtil.isEmpty(jokeId)) {
+			res.setCode(Result.CODE_PARA_ERROR);
+			res.setMsg("段子ID不能为空");
+			res.setData(0);
+			return res;
+		}
+		if (StringUtil.isEmpty(jokeType)) {
+			res.setCode(Result.CODE_PARA_ERROR);
+			res.setMsg("段子类型不能为空");
+			res.setData(0);
+			return res;
+		}
+		if (StringUtil.isEmpty(agreeType)) {
+			res.setCode(Result.CODE_PARA_ERROR);
+			res.setMsg("点赞类型不能为空");
+			return res;
+		}
+		try {
+			JokeAgreeHisModel model = new JokeAgreeHisModel();
+			String openId = "";
+			try {
+				openId = JedisTool.getString(sId);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			model.setUserCode(openId);
+			model.setJokeId(Integer.valueOf(jokeId));
+			model.setJokeType(jokeType);
+			logger.info(jokeId+"---"+jokeType+"---"+agreeType);
+			List<JokeAgreeHisModel> agreeHisList = jokeAgreeHisService.selectAgreeHisList(model);
+			logger.info(agreeHisList.size()+"");
+			if (agreeHisList.size() > 0) {
+				String savedAgreeType = agreeHisList.get(0).getAgreeType();
+				if(agreeType.equals(savedAgreeType)){
+					jokeAgreeHisService.deleteByPrimaryKey(agreeHisList.get(0).getAgreeHisId());
+					res.setCode(Result.CODE_OK);
+					res.setMsg("取消点赞");
+					res.setData(-1);
+				}else{
+					res.setCode(Result.CODE_OK);
+					res.setMsg("您已经点过赞了");
+					res.setData(0);
+				}
+				return res;
+			}
+			int count = jokeAgreeHisService.jokeAgree(jokeId, jokeType, openId, agreeType);
+			if (count > 0) {
+				res.setCode(Result.CODE_OK);
+				res.setMsg("点赞成功");
+				res.setData(1);
+			} else {
+				res.setCode(Result.CODE_ERROR);
+				res.setMsg("点赞失败");
+				res.setData(0);
+				return res;
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			res.setCode(Result.CODE_ERROR);
+			res.setMsg("服务器异常，点赞失败");
+			res.setData(0);
+		}
+		return res;
+	}
+
+	/**
+	 * 点赞评论
+	 * 
 	 * @param jokeUser
 	 * @return
 	 */
 	@RequestMapping("/commetAgree")
 	@ResponseBody
-	public Result commetAgree(String commetId,String agreeType,String sId) {
+	public Result commetAgree(String commetId, String agreeType, String sId) {
 		Result res = new Result();
-		if(StringUtil.isEmpty(sId)){
+		if (StringUtil.isEmpty(sId)) {
 			res.setCode(Result.CODE_PARA_ERROR);
 			res.setMsg("sessionID不能为空");
+			res.setData(0);
 			return res;
 		}
-		if(StringUtil.isEmpty(commetId)){
+		if (StringUtil.isEmpty(commetId)) {
 			res.setCode(Result.CODE_PARA_ERROR);
 			res.setMsg("评论ID不能为空");
+			res.setData(0);
 			return res;
 		}
-//		if(StringUtil.isEmpty(userCode)){
-//			res.setCode(Result.CODE_PARA_ERROR);
-//			res.setMsg("用户账号不能为空");
-//			return res;
-//		}
-		if(StringUtil.isEmpty(agreeType)){
+		if (StringUtil.isEmpty(agreeType)) {
 			res.setCode(Result.CODE_PARA_ERROR);
 			res.setMsg("点赞类型不能为空");
+			res.setData(0);
 			return res;
 		}
-		try{
-			JokeAgreeHisModel model = new JokeAgreeHisModel();
+		try {
+			JokeCommetAgreeHisModel model = new JokeCommetAgreeHisModel();
 			String openId = "";
 			try {
 				openId = JedisTool.getString(sId);
@@ -254,28 +391,40 @@ public class JokeAction {
 			}
 			model.setUserCode(openId);
 			model.setCommetId(Integer.valueOf(commetId));
-			List<JokeAgreeHisModel> agreeHisList = jokeAgreeHisService.selectAgreeHisList(model);
-			if(agreeHisList.size()>0){
-				res.setCode(Result.CODE_PARA_ERROR);
-				res.setMsg("您已经点过赞了");
-				return res;
+			List<JokeCommetAgreeHisModel> agreeHisList = jokeCommetAgreeHisService.selectCommetAgreeHisList(model);
+			if (agreeHisList.size() > 0) {
+				int count = jokeCommetService.disCommetAgree(commetId, openId, agreeType);
+				if (count == 2) {
+					res.setCode(Result.CODE_OK);
+					res.setMsg("取消点赞");
+					res.setData(-1);
+					return res;
+				} else {
+					res.setCode(Result.CODE_ERROR);
+					res.setMsg("点赞失败");
+					res.setData(0);
+					return res;
+				}
 			}
 			int count = jokeCommetService.commetAgree(commetId, openId, agreeType);
-			if(count==2){
+			if (count == 2) {
 				res.setCode(Result.CODE_OK);
-			}else{
+				res.setMsg("点赞成功");
+				res.setData(1);
+			} else {
 				res.setCode(Result.CODE_ERROR);
 				res.setMsg("点赞失败");
+				res.setData(0);
 				return res;
 			}
-		}catch(Exception e){
+		} catch (Exception e) {
 			logger.error(e.getMessage());
 			res.setCode(Result.CODE_ERROR);
 			res.setMsg("服务器异常，点赞失败");
 		}
 		return res;
 	}
-	
+
 	/**
 	 * 获取评论列表json
 	 * 
@@ -287,14 +436,37 @@ public class JokeAction {
 	@ResponseBody
 	public Result getCommetList(JokeCommetModel jokeCommet) {
 		Result res = new Result();
+		if (StringUtil.isEmpty(jokeCommet.getsId())) {
+			res.setCode(Result.CODE_PARA_ERROR);
+			res.setMsg("sessionID不能为空");
+			return res;
+		}
 		logger.info("查询评论列表start");
+		String openId = "";
+		try {
+			openId = JedisTool.getString(jokeCommet.getsId());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		jokeCommet.setParamUserCode(openId);
+		
+		Map<String, Object> data = new HashMap<>();
+		if(Content.JOKE_TYPE_IMG.equals(jokeCommet.getCommetJokeType())){
+			JokeImgModel imgModel = jokeImgService.selectByPrimaryKey(jokeCommet.getCommetJokeId());
+			data.put("joke", imgModel);
+		}else if(Content.JOKE_TYPE_TEXT.equals(jokeCommet.getCommetJokeType())){
+			JokeTextModel textModel = jokeTextService.selectByPrimaryKey(jokeCommet.getCommetJokeId());
+			data.put("joke", textModel);
+		}
 		List<JokeCommetModel> commetList = jokeCommetService.queryCommetList(jokeCommet);
 		logger.info("查询评论列表end");
 		res.setCode(Result.CODE_OK);
-		res.setData(commetList);
+		data.put("commetList", commetList);
+		res.setData(data);
 		return res;
 	}
-	
+
 	/**
 	 * 获取神评
 	 * 
@@ -313,7 +485,7 @@ public class JokeAction {
 		res.setData(godCommet);
 		return res;
 	}
-	
+
 	/**
 	 * 获取神评
 	 * 
@@ -338,16 +510,16 @@ public class JokeAction {
 		}
 		return res;
 	}
-	
+
 	public static void main(String[] args) {
-//		Map<String , String> params = new HashMap<String,String>();
-//		params.put("appid", Content.WX_APPID);
-//		params.put("secret", Content.WX_SECRET);
-//		params.put("js_code","003vPPHL1nJ6y215Z2EL1E8SHL1vPPHw");
-//		params.put("grant_type",Content.WX_GRANT_TYPE);
-//		//"appid=wx3d05766b984de06e&secret=9ce946c70c47e1eb2e9106cef958072c&js_code=013CuVM31uYUVM1anKO31gxQM31CuVMZ&grant_type=authorization_code"
-//		HttpsClient.httpsRequest(Content.WX_JSCODE_TO_SESSION, 
-//				"GET", params);
+		// Map<String , String> params = new HashMap<String,String>();
+		// params.put("appid", Content.WX_APPID);
+		// params.put("secret", Content.WX_SECRET);
+		// params.put("js_code","003vPPHL1nJ6y215Z2EL1E8SHL1vPPHw");
+		// params.put("grant_type",Content.WX_GRANT_TYPE);
+		// //"appid=wx3d05766b984de06e&secret=9ce946c70c47e1eb2e9106cef958072c&js_code=013CuVM31uYUVM1anKO31gxQM31CuVMZ&grant_type=authorization_code"
+		// HttpsClient.httpsRequest(Content.WX_JSCODE_TO_SESSION,
+		// "GET", params);
 	}
 
 }

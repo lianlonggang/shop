@@ -40,7 +40,7 @@ public class JokeUserModel extends BaseModel implements Serializable{
     }
 
     public void setUserCode(String userCode) {
-        this.userCode = userCode == null ? null : userCode.trim();
+        this.userCode = userCode;
     }
 
     public String getUserName() {
@@ -48,7 +48,7 @@ public class JokeUserModel extends BaseModel implements Serializable{
     }
 
     public void setUserName(String userName) {
-        this.userName = userName == null ? null : userName.trim();
+        this.userName = userName;
     }
 
     public Date getRegistTime() {
@@ -64,7 +64,7 @@ public class JokeUserModel extends BaseModel implements Serializable{
     }
 
     public void setUserAvatarUrl(String userAvatarUrl) {
-        this.userAvatarUrl = userAvatarUrl == null ? null : userAvatarUrl.trim();
+        this.userAvatarUrl = userAvatarUrl;
     }
 
     public String getUserCity() {
@@ -72,7 +72,7 @@ public class JokeUserModel extends BaseModel implements Serializable{
     }
 
     public void setUserCity(String userCity) {
-        this.userCity = userCity == null ? null : userCity.trim();
+        this.userCity = userCity;
     }
 
     public String getUserCountry() {
@@ -80,7 +80,7 @@ public class JokeUserModel extends BaseModel implements Serializable{
     }
 
     public void setUserCountry(String userCountry) {
-        this.userCountry = userCountry == null ? null : userCountry.trim();
+        this.userCountry = userCountry;
     }
 
     public String getUserGender() {
@@ -88,7 +88,7 @@ public class JokeUserModel extends BaseModel implements Serializable{
     }
 
     public void setUserGender(String userGender) {
-        this.userGender = userGender == null ? null : userGender.trim();
+        this.userGender = userGender;
     }
 
     public String getUserProvince() {
@@ -96,6 +96,6 @@ public class JokeUserModel extends BaseModel implements Serializable{
     }
 
     public void setUserProvince(String userProvince) {
-        this.userProvince = userProvince == null ? null : userProvince.trim();
+        this.userProvince = userProvince;
     }
 }

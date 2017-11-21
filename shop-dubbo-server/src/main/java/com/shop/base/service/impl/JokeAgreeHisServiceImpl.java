@@ -1,5 +1,6 @@
 package com.shop.base.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,13 +9,10 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.shop.base.dao.JokeAgreeHisMapper;
 import com.shop.base.entity.JokeAgreeHisModel;
 import com.shop.base.service.JokeAgreeHisService;
-
 @Service
 public class JokeAgreeHisServiceImpl implements JokeAgreeHisService {
-
 	@Autowired
 	private JokeAgreeHisMapper jokeAgreeHisMapper;
-
 	@Override
 	public int deleteByPrimaryKey(Integer agreeHisId) {
 		return jokeAgreeHisMapper.deleteByPrimaryKey(agreeHisId);
@@ -48,6 +46,17 @@ public class JokeAgreeHisServiceImpl implements JokeAgreeHisService {
 	@Override
 	public List<JokeAgreeHisModel> selectAgreeHisList(JokeAgreeHisModel record) {
 		return jokeAgreeHisMapper.selectAgreeHisList(record);
+	}
+
+	@Override
+	public int jokeAgree(String jokeId, String jokeType, String userCode, String agreeType) {
+		JokeAgreeHisModel record = new JokeAgreeHisModel();
+		record.setJokeId(Integer.valueOf(jokeId));
+		record.setJokeType(jokeType);
+		record.setUserCode(userCode);
+		record.setAgreeType(agreeType);
+		record.setAgreeTime(new Date());
+		return jokeAgreeHisMapper.insert(record);
 	}
 
 }

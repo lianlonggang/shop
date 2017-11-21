@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.shop.base.dao.JokeTextMapper">
-  <resultMap id="BaseResultMap" type="com.shop.base.entity.JokeTextModel">
+<mapper namespace="com.shop.base.dao.JokeImgReviewedMapper">
+  <resultMap id="BaseResultMap" type="com.shop.base.entity.JokeImgModel">
     <id column="id" jdbcType="INTEGER" property="id" />
   </resultMap>
-  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.shop.base.entity.JokeTextModel">
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.shop.base.entity.JokeImgModel">
     <result column="article_title" jdbcType="LONGVARCHAR" property="articleTitle" />
     <result column="article_content" jdbcType="LONGVARCHAR" property="articleContent" />
     <result column="article_author" jdbcType="LONGVARCHAR" property="articleAuthor" />
@@ -16,7 +16,7 @@
     id
   </sql>
   <sql id="Blob_Column_List">
-    article_title, article_content, article_author, from_unixtime(article_publish_time,'%Y-%m-%d') article_publish_time, article_avatar, 
+    article_title, SUBSTRING(article_content,11,LENGTH(article_content)-13) article_content, article_author, from_unixtime(article_publish_time,'%Y-%m-%d') article_publish_time, article_avatar, 
     article_categories
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="ResultMapWithBLOBs">
@@ -24,30 +24,30 @@
     <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
-    from tbl_sjs_joke_text
+    from tbl_sjs_joke_img_Reviewed
     where id = #{id,jdbcType=INTEGER}
   </select>
-  <select id="queryJokeTextNewList" parameterType="com.shop.base.entity.JokeTextModel" resultMap="ResultMapWithBLOBs">
+  <select id="queryJokeImgNewList" parameterType="com.shop.base.entity.JokeImgModel" resultMap="ResultMapWithBLOBs">
     select 
     <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
     ,
-   	(select count(1) from tbl_joke_agree_his his where text.id = his.joke_id and his.joke_type = 'text' and his.agree_type = 'agree') agreeCount,
-	(select count(1) from tbl_joke_agree_his his where text.id = his.joke_id and his.joke_type = 'text' and his.agree_type = 'disagree') disagreeCount ,
-	(select count(1) from tbl_joke_commet commet where text.id = commet.commet_joke_id and commet.commet_joke_type = 'text') commetCount,
-	(select count(1) from tbl_joke_agree_his his where text.id = his.joke_id and his.joke_type = 'text' and his.agree_type = 'agree' and his.user_code = #{paramUserCode,jdbcType=VARCHAR}) iconAgreeFlag,
-	(select count(1) from tbl_joke_agree_his his where text.id = his.joke_id and his.joke_type = 'text' and his.agree_type = 'disagree' and his.user_code = #{paramUserCode,jdbcType=VARCHAR}) iconDisagreeFlag
-    from tbl_sjs_joke_text text
-    where id > (SELECT joke_img_id FROM tbl_sjs_joke_last_id where joke_type = 'text')
+    (select count(1) from tbl_joke_agree_his his where img.id = his.joke_id and his.joke_type = 'img' and his.agree_type = 'agree') agreeCount,
+	(select count(1) from tbl_joke_agree_his his where img.id = his.joke_id and his.joke_type = 'img' and his.agree_type = 'disagree') disagreeCount ,
+	(select count(1) from tbl_joke_commet commet where img.id = commet.commet_joke_id and commet.commet_joke_type = 'img') commetCount,
+	(select count(1) from tbl_joke_agree_his his where img.id = his.joke_id and his.joke_type = 'img' and his.agree_type = 'agree' and his.user_code = #{paramUserCode,jdbcType=VARCHAR}) iconAgreeFlag,
+	(select count(1) from tbl_joke_agree_his his where img.id = his.joke_id and his.joke_type = 'img' and his.agree_type = 'disagree' and his.user_code = #{paramUserCode,jdbcType=VARCHAR}) iconDisagreeFlag
+    from tbl_sjs_joke_img_Reviewed img
+    order by id
     limit #{rowNo,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from tbl_sjs_joke_text
+    delete from tbl_sjs_joke_img_Reviewed
     where id = #{id,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.shop.base.entity.JokeTextModel">
-    insert into tbl_sjs_joke_text (id, article_title, article_content, 
+  <insert id="insert" parameterType="com.shop.base.entity.JokeImgModel">
+    insert into tbl_sjs_joke_img_Reviewed (id, article_title, article_content, 
       article_author, article_publish_time, 
       article_avatar, article_categories
       )
@@ -56,8 +56,8 @@
       #{articleAvatar,jdbcType=LONGVARCHAR}, #{articleCategories,jdbcType=LONGVARCHAR}
       )
   </insert>
-  <insert id="insertSelective" parameterType="com.shop.base.entity.JokeTextModel">
-    insert into tbl_sjs_joke_text
+  <insert id="insertSelective" parameterType="com.shop.base.entity.JokeImgModel">
+    insert into tbl_sjs_joke_img_Reviewed
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">
         id,
@@ -105,8 +105,8 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.shop.base.entity.JokeTextModel">
-    update tbl_sjs_joke_text
+  <update id="updateByPrimaryKeySelective" parameterType="com.shop.base.entity.JokeImgModel">
+    update tbl_sjs_joke_img_Reviewed
     <set>
       <if test="articleTitle != null">
         article_title = #{articleTitle,jdbcType=LONGVARCHAR},
@@ -129,8 +129,8 @@
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.shop.base.entity.JokeTextModel">
-    update tbl_sjs_joke_text
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.shop.base.entity.JokeImgModel">
+    update tbl_sjs_joke_img_Reviewed
     set article_title = #{articleTitle,jdbcType=LONGVARCHAR},
       article_content = #{articleContent,jdbcType=LONGVARCHAR},
       article_author = #{articleAuthor,jdbcType=LONGVARCHAR},

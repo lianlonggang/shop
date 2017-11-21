@@ -71,7 +71,7 @@ public class BaseCodeServiceImpl implements BaseCodeService {
 					map.put(baseCode.getType(), baseCode.getCode());
 				}
 				baseCodeMap = map;
-				JedisTool.setMap("baseCodeMap", baseCodeMap);
+				JedisTool.setMap("baseCodeMap", baseCodeMap,36000);
 			}
 			code = (String) baseCodeMap.get(type);
 		} catch (Exception e) {

@@ -32,7 +32,13 @@
     <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
-    from tbl_sjs_joke_img
+    ,
+    (select count(1) from tbl_joke_agree_his his where img.id = his.joke_id and his.joke_type = 'img' and his.agree_type = 'agree') agreeCount,
+	(select count(1) from tbl_joke_agree_his his where img.id = his.joke_id and his.joke_type = 'img' and his.agree_type = 'disagree') disagreeCount ,
+	(select count(1) from tbl_joke_commet commet where img.id = commet.commet_joke_id and commet.commet_joke_type = 'img') commetCount,
+	(select count(1) from tbl_joke_agree_his his where img.id = his.joke_id and his.joke_type = 'img' and his.agree_type = 'agree' and his.user_code = #{paramUserCode,jdbcType=VARCHAR}) iconAgreeFlag,
+	(select count(1) from tbl_joke_agree_his his where img.id = his.joke_id and his.joke_type = 'img' and his.agree_type = 'disagree' and his.user_code = #{paramUserCode,jdbcType=VARCHAR}) iconDisagreeFlag
+    from tbl_sjs_joke_img img
     where id > (SELECT joke_img_id FROM tbl_sjs_joke_last_id where joke_type='img')
     limit #{rowNo,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
   </select>

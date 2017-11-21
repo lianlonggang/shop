@@ -37,11 +37,17 @@
 	</select>
 	<select id="queryCommetList" parameterType="com.shop.base.entity.JokeCommetModel" resultMap="ResultMapWithBLOBs">
 	    select 
-	    <include refid="Base_Column_List" />
-	    ,
 	    <include refid="Blob_Column_List" />
-	    from tbl_joke_commet
-	    where commet_Joke_Id = #{commetJokeId,jdbcType=VARCHAR}
+	    ,
+	    commet_id, commet_parnt_id, commet_joke_id, commet_joke_type, 
+	    commet.user_code,
+		commet_time,
+		commet_agree_count, commet_disagree_count
+	    ,user.user_avatar_url commonUserImg,user.user_name commonUserName,
+	    (select count(1) from tbl_joke_commet_agree_his his where his.commet_id = commet.commet_id and his.agree_type='agree' and his.user_code = #{paramUserCode,jdbcType=VARCHAR}) iconCommetAgreeFlag
+	    from tbl_joke_commet commet,tbl_joke_user user
+	    where commet.user_code = user.user_code
+	    and commet_Joke_Id = #{commetJokeId,jdbcType=VARCHAR}
 	    and commet_joke_type = #{commetJokeType,jdbcType=VARCHAR}
 	    order by commet_time desc
 	    limit #{rowNo,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
@@ -187,16 +193,28 @@
 		commet_disagree_count = #{commetDisagreeCount,jdbcType=INTEGER}
 		where commet_id = #{commetId,jdbcType=INTEGER}
 	</update>
-	<update id="updateAgreeCount" parameterType="com.shop.base.entity.JokeCommetModel">
+	<update id="addAgreeCount" parameterType="com.shop.base.entity.JokeCommetModel">
 		update tbl_joke_commet
 		set
 		commet_agree_count = commet_agree_count+1
 		where commet_id = #{commetId,jdbcType=INTEGER}
 	</update>
-	<update id="updateDisagreeCount" parameterType="com.shop.base.entity.JokeCommetModel">
+	<update id="addDisagreeCount" parameterType="com.shop.base.entity.JokeCommetModel">
 		update tbl_joke_commet
 		set
 		commet_disagree_count = commet_disagree_count+1
+		where commet_id = #{commetId,jdbcType=INTEGER}
+	</update>
+	<update id="minuteAgreeCount" parameterType="com.shop.base.entity.JokeCommetModel">
+		update tbl_joke_commet
+		set
+		commet_agree_count = commet_agree_count-1
+		where commet_id = #{commetId,jdbcType=INTEGER}
+	</update>
+	<update id="minuteDisagreeCount" parameterType="com.shop.base.entity.JokeCommetModel">
+		update tbl_joke_commet
+		set
+		commet_disagree_count = commet_disagree_count-1
 		where commet_id = #{commetId,jdbcType=INTEGER}
 	</update>
 </mapper>

@@ -12,7 +12,7 @@
 <script type="text/javascript"
 	src="${el:getWebRootPath()}/resource/js/sea.js"></script>
 </head>
-<body>
+<body>8888
 	<div style="background: #f1f1f1;">
 		<div class="container">
 			<div class="row">

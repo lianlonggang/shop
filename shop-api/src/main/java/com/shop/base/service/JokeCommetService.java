@@ -25,4 +25,6 @@ public interface JokeCommetService {
 
 	// 点赞
 	int commetAgree(String commetId, String userCode, String agreeType);
+	// 取消点赞
+	int disCommetAgree(String commetId, String userCode,String agreeType);
 }

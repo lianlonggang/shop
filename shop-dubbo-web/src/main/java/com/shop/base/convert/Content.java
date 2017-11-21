@@ -11,4 +11,6 @@ public class Content {
 	
 	public static final String JOKE_TYPE_IMG = "img";
 	public static final String JOKE_TYPE_TEXT = "text";
+	
+	public static final String BASE_REVIEW_FLAG = "reviewFlag";
 }

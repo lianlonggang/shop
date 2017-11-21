@@ -6,9 +6,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alibaba.dubbo.config.annotation.Service;
-import com.shop.base.dao.JokeAgreeHisMapper;
+import com.shop.base.dao.JokeCommetAgreeHisMapper;
 import com.shop.base.dao.JokeCommetMapper;
-import com.shop.base.entity.JokeAgreeHisModel;
+import com.shop.base.entity.JokeCommetAgreeHisModel;
 import com.shop.base.entity.JokeCommetModel;
 import com.shop.base.service.JokeCommetService;
 
@@ -18,7 +18,7 @@ public class JokeCommetServiceImpl implements JokeCommetService {
 	@Autowired
 	private JokeCommetMapper jokeCommetMapper;
 	@Autowired
-	private JokeAgreeHisMapper jokeAgreeHisMapper;
+	private JokeCommetAgreeHisMapper jokeAgreeHisMapper;
 
 	@Override
 	public int deleteByPrimaryKey(Integer commetId) {
@@ -71,16 +71,37 @@ public class JokeCommetServiceImpl implements JokeCommetService {
 		JokeCommetModel record = new JokeCommetModel();
 		record.setCommetId(Integer.valueOf(commetId));
 		if("disagree".equalsIgnoreCase(agreeType)){
-			count = jokeCommetMapper.updateDisagreeCount(record);
+			count = jokeCommetMapper.addDisagreeCount(record);
 		}else{
-			count = jokeCommetMapper.updateAgreeCount(record);
+			count = jokeCommetMapper.addAgreeCount(record);
 		}
-		JokeAgreeHisModel agreeHis = new JokeAgreeHisModel();
+		JokeCommetAgreeHisModel agreeHis = new JokeCommetAgreeHisModel();
 		agreeHis.setCommetId(Integer.valueOf(commetId));
 		agreeHis.setUserCode(userCode);
 		agreeHis.setAgreeType(agreeType);
 		agreeHis.setAgreeTime(new Date());
 		count += jokeAgreeHisMapper.insert(agreeHis);
+		
+		return count;
+	}
+	@Override
+	public int disCommetAgree(String commetId, String userCode,String agreeType) {
+		int count = -1;
+		JokeCommetModel record = new JokeCommetModel();
+		record.setCommetId(Integer.valueOf(commetId));
+		if("disagree".equalsIgnoreCase(agreeType)){
+			count = jokeCommetMapper.minuteDisagreeCount(record);
+		}else{
+			count = jokeCommetMapper.minuteAgreeCount(record);
+		}
+		JokeCommetAgreeHisModel agreeHis = new JokeCommetAgreeHisModel();
+		agreeHis.setCommetId(Integer.valueOf(commetId));
+		agreeHis.setUserCode(userCode);
+		agreeHis.setAgreeType(agreeType);
+		List<JokeCommetAgreeHisModel> jahList = jokeAgreeHisMapper.selectCommetAgreeHisList(agreeHis);
+		if(jahList!=null && jahList.size()>0){
+			count += jokeAgreeHisMapper.deleteByPrimaryKey(jahList.get(0).getAgreeHisId());
+		}
 		
 		return count;
 	}

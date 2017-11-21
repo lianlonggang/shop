@@ -1,54 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.shop.base.dao.JokeAgreeHisMapper">
-  <resultMap id="BaseResultMap" type="com.shop.base.entity.JokeAgreeHisModel">
+<mapper namespace="com.shop.base.dao.JokeCommetAgreeHisMapper">
+  <resultMap id="BaseResultMap" type="com.shop.base.entity.JokeCommetAgreeHisModel">
     <id column="agree_his_id" jdbcType="INTEGER" property="agreeHisId" />
-    <result column="joke_id" jdbcType="INTEGER" property="jokeId" />
-    <result column="joke_type" jdbcType="VARCHAR" property="jokeType" />
+    <result column="commet_id" jdbcType="INTEGER" property="commetId" />
     <result column="user_code" jdbcType="VARCHAR" property="userCode" />
     <result column="agree_time" jdbcType="TIMESTAMP" property="agreeTime" />
     <result column="agree_type" jdbcType="VARCHAR" property="agreeType" />
   </resultMap>
   <sql id="Base_Column_List">
-    agree_his_id, joke_id, joke_type, user_code, agree_time, agree_type
+    agree_his_id, commet_id, user_code, agree_time, agree_type
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from tbl_joke_agree_his
+    from tbl_joke_commet_agree_his
     where agree_his_id = #{agreeHisId,jdbcType=INTEGER}
   </select>
-  <select id="selectAgreeHisList" parameterType="com.shop.base.entity.JokeAgreeHisModel" resultMap="BaseResultMap">
+  <select id="selectCommetAgreeHisList" parameterType="com.shop.base.entity.JokeCommetAgreeHisModel" resultMap="BaseResultMap">
     select 
     <include refid="Base_Column_List" />
-    from tbl_joke_agree_his
-    where joke_id = #{jokeId,jdbcType=INTEGER}
-    and joke_type = #{jokeType,jdbcType=VARCHAR}
+    from tbl_joke_commet_agree_his
+    where commet_id = #{commetId,jdbcType=INTEGER}
     and user_code = #{userCode,jdbcType=VARCHAR}
   </select>
   <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from tbl_joke_agree_his
+    delete from tbl_joke_commet_agree_his
     where agree_his_id = #{agreeHisId,jdbcType=INTEGER}
   </delete>
-  <insert id="insert" parameterType="com.shop.base.entity.JokeAgreeHisModel">
-    insert into tbl_joke_agree_his (agree_his_id, joke_id, joke_type, 
-      user_code, agree_time, agree_type
-      )
-    values (#{agreeHisId,jdbcType=INTEGER}, #{jokeId,jdbcType=INTEGER}, #{jokeType,jdbcType=VARCHAR}, 
-      #{userCode,jdbcType=VARCHAR}, #{agreeTime,jdbcType=TIMESTAMP}, #{agreeType,jdbcType=VARCHAR}
-      )
+  <insert id="insert" parameterType="com.shop.base.entity.JokeCommetAgreeHisModel">
+    insert into tbl_joke_commet_agree_his (agree_his_id, commet_id, user_code, 
+      agree_time, agree_type)
+    values (#{agreeHisId,jdbcType=INTEGER}, #{commetId,jdbcType=INTEGER}, #{userCode,jdbcType=VARCHAR}, 
+      #{agreeTime,jdbcType=TIMESTAMP}, #{agreeType,jdbcType=VARCHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.shop.base.entity.JokeAgreeHisModel">
-    insert into tbl_joke_agree_his
+  <insert id="insertSelective" parameterType="com.shop.base.entity.JokeCommetAgreeHisModel">
+    insert into tbl_joke_commet_agree_his
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="agreeHisId != null">
         agree_his_id,
       </if>
-      <if test="jokeId != null">
-        joke_id,
-      </if>
-      <if test="jokeType != null">
-        joke_type,
+      <if test="commetId != null">
+        commet_id,
       </if>
       <if test="userCode != null">
         user_code,
@@ -64,11 +57,8 @@
       <if test="agreeHisId != null">
         #{agreeHisId,jdbcType=INTEGER},
       </if>
-      <if test="jokeId != null">
-        #{jokeId,jdbcType=INTEGER},
-      </if>
-      <if test="jokeType != null">
-        #{jokeType,jdbcType=VARCHAR},
+      <if test="commetId != null">
+        #{commetId,jdbcType=INTEGER},
       </if>
       <if test="userCode != null">
         #{userCode,jdbcType=VARCHAR},
@@ -81,14 +71,11 @@
       </if>
     </trim>
   </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.shop.base.entity.JokeAgreeHisModel">
-    update tbl_joke_agree_his
+  <update id="updateByPrimaryKeySelective" parameterType="com.shop.base.entity.JokeCommetAgreeHisModel">
+    update tbl_joke_commet_agree_his
     <set>
-      <if test="jokeId != null">
-        joke_id = #{jokeId,jdbcType=INTEGER},
-      </if>
-      <if test="jokeType != null">
-        joke_type = #{jokeType,jdbcType=VARCHAR},
+      <if test="commetId != null">
+        commet_id = #{commetId,jdbcType=INTEGER},
       </if>
       <if test="userCode != null">
         user_code = #{userCode,jdbcType=VARCHAR},
@@ -102,10 +89,9 @@
     </set>
     where agree_his_id = #{agreeHisId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.shop.base.entity.JokeAgreeHisModel">
-    update tbl_joke_agree_his
-    set joke_id = #{jokeId,jdbcType=INTEGER},
-      joke_type = #{jokeType,jdbcType=VARCHAR},
+  <update id="updateByPrimaryKey" parameterType="com.shop.base.entity.JokeCommetAgreeHisModel">
+    update tbl_joke_commet_agree_his
+    set commet_id = #{commetId,jdbcType=INTEGER},
       user_code = #{userCode,jdbcType=VARCHAR},
       agree_time = #{agreeTime,jdbcType=TIMESTAMP},
       agree_type = #{agreeType,jdbcType=VARCHAR}

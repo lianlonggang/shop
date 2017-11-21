@@ -23,7 +23,11 @@ public interface JokeCommetMapper {
 
     int updateByPrimaryKey(JokeCommetModel record);
     
-    int updateAgreeCount(JokeCommetModel record);
+    int addAgreeCount(JokeCommetModel record);
     
-    int updateDisagreeCount(JokeCommetModel record);
+    int addDisagreeCount(JokeCommetModel record);
+    
+    int minuteAgreeCount(JokeCommetModel record);
+    
+    int minuteDisagreeCount(JokeCommetModel record);
 }
